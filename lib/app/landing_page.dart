@@ -17,8 +17,7 @@ class _LandingPageState extends State<LandingPage> {
   void _updateUser(User user) {
     setState(() {
       _user = user;
-      print(_user);
-    });
+        });
   }
 
   Future<void> _checkCurrentUser() async {
