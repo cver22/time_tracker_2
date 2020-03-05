@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class User {
   User({@required this.uid});
@@ -8,10 +10,10 @@ class User {
 }
 
 abstract class AuthBase {
+  Stream<User> get onAuthStateChanged;
   Future<User> currentUser();
-
   Future<User> signInAnonymously();
-
+  Future<User> signInWithGoogle();
   Future<void> signOut();
 }
 
@@ -23,8 +25,14 @@ class Auth implements AuthBase {
       return null;
     }
     return User(uid: user.uid);
-    // returns only the string
-    //decouples the app from the authentication
+    // parses the string from a user map
+    // decouples the app from the authentication
+  }
+
+  @override
+  Stream<User> get onAuthStateChanged {
+    return _firebaseAuth.onAuthStateChanged.map(_userFromFirebase);
+    //firebase users are a map, by choosing a type this helps to add type safety to the data
   }
 
   @override
@@ -40,7 +48,38 @@ class Auth implements AuthBase {
   }
 
   @override
+  Future<User> signInWithGoogle() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    final GoogleSignInAccount googleAccount = await googleSignIn.signIn();
+    if (googleAccount != null) {
+      final GoogleSignInAuthentication googleAuth =
+          await googleAccount.authentication;
+      if(googleAuth.idToken != null && googleAuth.accessToken != null) {
+        final authResult = await _firebaseAuth.signInWithCredential(
+          GoogleAuthProvider.getCredential(
+            idToken: googleAuth.idToken,
+            accessToken: googleAuth.accessToken,
+          ),
+        );
+        return _userFromFirebase(authResult.user);
+      }else{
+        throw PlatformException(
+          code: 'ERROR_MISSING_GOOGLE_AUTH_TOKEN',
+          message: 'Missing Google Auth Token',
+        );
+      }
+    } else {
+      throw PlatformException(
+        code: 'ERROR_ABORTED_BY_USER',
+        message: 'Sign in aborted by user',
+      );
+    }
+  }
+
+  @override
   Future<void> signOut() async {
+    final googleSignIn = GoogleSignIn();
+    googleSignIn.signOut();
     _firebaseAuth.signOut();
   }
 }

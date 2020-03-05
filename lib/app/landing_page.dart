@@ -3,49 +3,39 @@ import 'package:time_tracker_2/app/sign_in/sign_in_page.dart';
 import 'package:flutter/material.dart';
 import 'package:time_tracker_2/services/auth.dart';
 
-class LandingPage extends StatefulWidget {
+class LandingPage extends StatelessWidget {
+  //was a stateful widget before adding streambuilder
+  //keeps the app signed in even when not in use or closed
   LandingPage({@required this.auth});
+
   final AuthBase auth;
 
   @override
-  _LandingPageState createState() => _LandingPageState();
-}
-
-class _LandingPageState extends State<LandingPage> {
-  User _user;
-
-  void _updateUser(User user) {
-    setState(() {
-      _user = user;
-        });
-  }
-
-  Future<void> _checkCurrentUser() async {
-  User user = await widget.auth.currentUser();
-  //need to access the LandingPage widget
-  //accessing the dependency in the widget
-  _updateUser(user);
-}
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _checkCurrentUser();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (_user == null) {
-      return SignInPage(
-        //onSignIn: (user) => _updateUser(user), deprecated
-        onSignIn: _updateUser,
-        auth: widget.auth,
-      );
-    }
-    return HomePage(
-      auth: widget.auth,
-      onSignOut: () => _updateUser(null),
+    return StreamBuilder<User>(
+      //type safety of User
+      //removes the need for the landing page to be a stateful widget
+      stream: auth.onAuthStateChanged,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          User user = snapshot.data;
+          if (user == null) {
+            return SignInPage(
+              auth: auth,
+            );
+          }
+          return HomePage(
+            auth: auth,
+          );
+        } else {
+          // if the app is still trying to determine if someone is logging in the indicator shows
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+      },
     );
   }
 }
