@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:time_tracker_2/app/sign_in/email_sign_in_page.dart';
 import 'package:time_tracker_2/app/sign_in/sign_in_button.dart';
 import 'package:time_tracker_2/app/sign_in/social_sign_in_button.dart';
 import 'package:time_tracker_2/services/auth.dart';
@@ -26,9 +27,15 @@ class SignInPage extends StatelessWidget {
     }
   }
 
-  void _signInWithEmail(BuildContext context){
-    // TODO: sign in page
-
+  void _signInWithEmail(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        //only changes how screen gets added to stack on iOS, bottom vs side
+        fullscreenDialog: true,
+        //navigates to email sign in page
+        builder: (context) => EmailSignInPage(auth: auth),
+      ),
+    );
   }
 
   @override
