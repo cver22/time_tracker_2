@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:time_tracker_2/app/sign_in/email_sign_in_page.dart';
 import 'package:time_tracker_2/app/sign_in/sign_in_button.dart';
 import 'package:time_tracker_2/app/sign_in/social_sign_in_button.dart';
-import 'package:time_tracker_2/services/auth.dart';
+import 'package:time_tracker_2/services/auth_provider.dart';
 
 class SignInPage extends StatelessWidget {
-  SignInPage({@required this.auth});
 
-  final AuthBase auth;
 
-  Future<void> _signInAnonymously() async {
+  Future<void> _signInAnonymously(BuildContext context) async {
     try {
+      final auth = AuthProvider.of(context);
       await auth.signInAnonymously();
     } catch (e) {
       print(e);
@@ -18,8 +17,9 @@ class SignInPage extends StatelessWidget {
     }
   }
 
-  Future<void> _signInWithGoogle() async {
+  Future<void> _signInWithGoogle(BuildContext context) async {
     try {
+      final auth = AuthProvider.of(context);
       await auth.signInWithGoogle();
     } catch (e) {
       print(e);
@@ -33,7 +33,7 @@ class SignInPage extends StatelessWidget {
         //only changes how screen gets added to stack on iOS, bottom vs side
         fullscreenDialog: true,
         //navigates to email sign in page
-        builder: (context) => EmailSignInPage(auth: auth),
+        builder: (context) => EmailSignInPage(),
       ),
     );
   }
@@ -70,7 +70,7 @@ class SignInPage extends StatelessWidget {
             textColor: Colors.black87,
             text: 'Sign in with Google',
             color: Colors.white,
-            onPressed: _signInWithGoogle,
+            onPressed: () => _signInWithGoogle(context),
             assetName: 'images/google-logo.png',
           ),
           SizedBox(height: 8.0),
@@ -102,7 +102,7 @@ class SignInPage extends StatelessWidget {
             text: 'Go anomoymus',
             textColor: Colors.black,
             color: Colors.lime[300],
-            onPressed: _signInAnonymously,
+            onPressed: () => _signInAnonymously(context),
           ),
         ],
       ),
