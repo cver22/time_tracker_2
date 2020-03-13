@@ -1,16 +1,16 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:time_tracker_2/app/sign_in/validators.dart';
 import 'package:time_tracker_2/common_widgets/form_submit_button.dart';
 import 'package:time_tracker_2/common_widgets/platform_alert_dialog.dart';
-
-import 'package:time_tracker_2/services/auth_provider.dart';
+import 'package:time_tracker_2/common_widgets/platform_exception_alert_dialog.dart';
+import 'package:time_tracker_2/services/auth.dart';
+import 'package:flutter/services.dart';
 
 enum EmailSignInFormType { signIn, register }
 
 class EmailSignInForm extends StatefulWidget with EmailAndPasswordValidators {
-
-
   @override
   _EmailSignInFormState createState() => _EmailSignInFormState();
 }
@@ -18,7 +18,7 @@ class EmailSignInForm extends StatefulWidget with EmailAndPasswordValidators {
 class _EmailSignInFormState extends State<EmailSignInForm> {
   final TextEditingController _emailEditingController = TextEditingController();
   final TextEditingController _passwordEditingController =
-  TextEditingController();
+      TextEditingController();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
 
@@ -39,21 +39,20 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       //TODO add progress indicator
     });
     try {
-      final auth = AuthProvider.of(context);
+      final auth = Provider.of<AuthBase>(context, listen: false);
       if (_formType == EmailSignInFormType.signIn) {
         await auth.signInWithEmailAndPassword(_email, _password);
       } else {
         await auth.createUserWithEmailAndPassword(_email, _password);
       }
       Navigator.of(context).pop();
-    } catch (e) {
+    } on PlatformException catch (e) {
       if (Platform.isIOS) {
         print('sow iOS dialog');
       } else {
-        PlatformAlertDialog(
+        PlatformExceptionAlertDialog(
           title: 'Sign in failed',
-          content: e.toString(),
-          defaultActionText: 'OK',
+          exception: e,
         ).show(context);
         //DONE show error to user
       }

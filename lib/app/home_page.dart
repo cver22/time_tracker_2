@@ -1,14 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:time_tracker_2/common_widgets/platform_alert_dialog.dart';
 import 'package:time_tracker_2/services/auth.dart';
-import 'package:time_tracker_2/services/auth_provider.dart';
 
 class HomePage extends StatelessWidget {
-
   Future<void> _signOut(BuildContext context) async {
     try {
-      final auth = AuthProvider.of(context);
+      final auth = Provider.of<AuthBase>(context, listen: false);
       await auth.signOut();
     } catch (e) {
       print(e);
@@ -22,10 +20,9 @@ class HomePage extends StatelessWidget {
       content: 'Are you sure you want to log out?',
       defaultActionText: 'Logout',
       cancelActionText: 'Cancel',
-
     ).show(context);
 
-    if(didRequestSignOut){
+    if (didRequestSignOut) {
       _signOut(context);
     }
   }
