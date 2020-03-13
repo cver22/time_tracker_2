@@ -21,6 +21,7 @@ class CustomRaisedButton extends StatelessWidget {
       height: height,
       child: RaisedButton(
         color: color,
+        disabledColor: color,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
         child: child,

@@ -30,6 +30,16 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   bool _submitButtonHasBeenPressed = false;
   bool _isLoading = false;
 
+  @override
+  void dispose(){
+    //removes these from operation to take them out of memory
+    _emailFocusNode.dispose();
+    _emailEditingController.dispose();
+    _passwordFocusNode.dispose();
+    _passwordEditingController.dispose();
+    super.dispose();
+  }
+
   //We don't need to pass context in a stateful widget as we always have access to it
   void _submit() async {
     print('form submitted');
