@@ -2,12 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracker_2/app/sign_in/email_sign_in_page.dart';
+import 'package:time_tracker_2/app/sign_in/sign_in_bloc.dart';
 import 'package:time_tracker_2/app/sign_in/sign_in_button.dart';
 import 'package:time_tracker_2/app/sign_in/social_sign_in_button.dart';
 import 'package:time_tracker_2/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:time_tracker_2/services/auth.dart';
 
 class SignInPage extends StatefulWidget {
+  static Widget create(BuildContext context){
+    return Provider<SignInBloc>(
+      create: (_) => SignInBloc(), //not passing context, therefore use _
+      child: SignInPage(),
+    );
+  }
   @override
   _SignInPageState createState() => _SignInPageState();
 }
@@ -64,17 +71,25 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = Provider.of<SignInBloc>(context);
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
+        //app bar is not wrapped by StreamBuilder as it doesn't need to be rebuilt
         title: Text('Time Tracker'),
         elevation: 2.0,
       ),
-      body: _buildContent(context),
+      body: StreamBuilder<bool>(
+        stream: bloc.isLoadingStream,
+        initialData: false,
+        builder: (context, snapshot) {
+          return _buildContent(context, snapshot.data);
+        }
+      ),
     );
   }
 
-  Widget _buildContent(BuildContext context) {
+  Widget _buildContent(BuildContext context, bool isLoading) {
     return Padding(
       padding: EdgeInsets.all(16.0),
       child: Column(
@@ -90,7 +105,7 @@ class _SignInPageState extends State<SignInPage> {
             textColor: Colors.black87,
             text: 'Sign in with Google',
             color: Colors.white,
-            onPressed: _isLoading ? null :  () => _signInWithGoogle(context),
+            onPressed: isLoading ? null :  () => _signInWithGoogle(context),
             assetName: 'images/google-logo.png',
           ),
           SizedBox(height: 8.0),
@@ -106,7 +121,7 @@ class _SignInPageState extends State<SignInPage> {
             text: 'Sign in with email',
             textColor: Colors.white,
             color: Colors.teal[700],
-            onPressed: _isLoading ? null :  () => _signInWithEmail(context),
+            onPressed: isLoading ? null :  () => _signInWithEmail(context),
           ),
           SizedBox(height: 8.0),
           Text(
