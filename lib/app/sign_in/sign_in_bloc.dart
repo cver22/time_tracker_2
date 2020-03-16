@@ -1,12 +1,12 @@
 import 'dart:async';
 
 class SignInBloc{
-  final StreamController<bool> _isloadingController = StreamController<bool>();
-  Stream<bool> get isLoadingStream => _isloadingController.stream;
+  final StreamController<bool> _isLoadingController = StreamController<bool>();
+  Stream<bool> get isLoadingStream => _isLoadingController.stream;
 
   void dispose() {
-    _isloadingController.close();
+    _isLoadingController.close();
   }
 
-  void setIsLoading(bool isLoading) => _isloadingController.add(isLoading);
+  void setIsLoading(bool isLoading) => _isLoadingController.add(isLoading);
 }
