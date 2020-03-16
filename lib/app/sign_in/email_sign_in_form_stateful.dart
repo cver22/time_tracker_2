@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracker_2/app/sign_in/validators.dart';
 import 'package:time_tracker_2/common_widgets/form_submit_button.dart';
-import 'package:time_tracker_2/common_widgets/platform_alert_dialog.dart';
 import 'package:time_tracker_2/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:time_tracker_2/services/auth.dart';
 import 'package:flutter/services.dart';

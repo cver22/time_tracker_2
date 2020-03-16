@@ -13,9 +13,11 @@ class SignInPage extends StatelessWidget {
   final SignInBloc bloc;
 
   static Widget create(BuildContext context) {
+    final auth = Provider.of<AuthBase>(context);
     return Provider<SignInBloc>(
-      create: (_) => SignInBloc(),
-      dispose: (context,bloc) => bloc.dispose(),//not passing context, therefore use _
+      create: (_) => SignInBloc(auth: auth),
+      dispose: (context, bloc) => bloc.dispose(),
+      //not passing context, therefore use _
       child: Consumer<SignInBloc>(
         builder: (context, bloc, _) => SignInPage(bloc: bloc),
       ),
@@ -31,30 +33,22 @@ class SignInPage extends StatelessWidget {
 
   Future<void> _signInAnonymously(BuildContext context) async {
     try {
-      bloc.setIsLoading(true);
-      final auth = Provider.of<AuthBase>(context, listen: false);
-      await auth.signInAnonymously();
+      await bloc.signInAnonymously();
     } on PlatformException catch (e) {
       _showSignInError(context, e);
       //DONE - Show Alert
-    } finally {
-      bloc.setIsLoading(false);
     }
   }
 
   Future<void> _signInWithGoogle(BuildContext context) async {
     try {
-      bloc.setIsLoading(true);
-      final auth = Provider.of<AuthBase>(context, listen: false);
-      await auth.signInWithGoogle();
+      await bloc.signInWithGoogle();
     } on PlatformException catch (e) {
       if (e.code != 'ERROR_ABORTED_BY_USER') {
         //only show error if created by action other than user abort
         _showSignInError(context, e);
       }
       //DONE - Show Alert
-    } finally {
-      bloc.setIsLoading(false);
     }
   }
 
