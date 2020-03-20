@@ -30,11 +30,29 @@ class EmailSignInBloc {
             _model.email, _model.password);
       }
     } catch (e) {
-      rethrow;
-    } finally {
+      //only need to update model if sign-in fails, otherwise page dismissed
       updateWith(isLoading: false);
+      rethrow;
     }
   }
+
+  void toggleFormType() {
+    final formType = _model.formType == EmailSignInFormType.signIn
+        ? EmailSignInFormType.register
+        : EmailSignInFormType.signIn;
+
+    updateWith(
+      email: '',
+      password: '',
+      formType: formType,
+      isLoading: false,
+      submitted: false,
+    );
+  }
+
+  void updateEmail(String email) => updateWith(email: email.trim());
+
+  void updatePassword(String password) => updateWith(password: password);
 
   void updateWith({
     String email,
