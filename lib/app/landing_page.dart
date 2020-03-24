@@ -3,7 +3,7 @@ import 'package:time_tracker_2/app/home/jobs_page.dart';
 import 'package:time_tracker_2/app/sign_in/sign_in_page.dart';
 import 'package:flutter/material.dart';
 import 'package:time_tracker_2/services/auth.dart';
-
+import 'package:time_tracker_2/services/database.dart';
 
 class LandingPage extends StatelessWidget {
   //was a stateful widget before adding streambuilder
@@ -23,7 +23,9 @@ class LandingPage extends StatelessWidget {
           if (user == null) {
             return SignInPage.create(context);
           }
-          return JobsPage();
+          return Provider<Database>(
+              create: (_) => FirestoreDatabase(uid: user.uid),
+              child: JobsPage());
         } else {
           // if the app is still trying to determine if someone is logging in the indicator shows
           return Scaffold(
