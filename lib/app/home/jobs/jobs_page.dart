@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:time_tracker_2/app/models/job.dart';
+import 'package:time_tracker_2/app/home/jobs/add_job_page.dart';
+import 'package:time_tracker_2/app/home/models/job.dart';
 import 'package:time_tracker_2/common_widgets/platform_alert_dialog.dart';
 import 'package:time_tracker_2/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:time_tracker_2/services/auth.dart';
@@ -32,23 +34,8 @@ class JobsPage extends StatelessWidget {
     }
   }
 
-  Future<void> _createJob(BuildContext context) async {
-    try {
-      final database = Provider.of<Database>(context, listen: false);
-      await database.createJob(Job(name: 'Blogging', ratePerHour: 10));
-    } on PlatformException catch (e) {
-      PlatformExceptionAlertDialog(
-        title: 'Operation failed',
-        exception: e,
-      ).show(context);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    //TODO temp code: delete me
-    final database = Provider.of<Database>(context);
-    database.readJobs();
     return Scaffold(
       appBar: AppBar(
         title: Text('Jobs'),
@@ -65,10 +52,36 @@ class JobsPage extends StatelessWidget {
           ),
         ],
       ),
+      body: _buildContents(context),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _createJob(context),
+        onPressed: () => AddJobPage.show(context),
         child: Icon(Icons.add),
       ),
+    );
+  }
+
+  Widget _buildContents(BuildContext context) {
+    final database = Provider.of<Database>(context);
+    return StreamBuilder<List<Job>>(
+      stream: database.jobsStream(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final jobs = snapshot.data;
+          final children = jobs.map((job) => Text(job.name)).toList();
+          //need .toList as map returns an iterable collection
+          return ListView(
+            children: children,
+          );
+        }
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('An error has occured'),
+          );
+        }
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 }
