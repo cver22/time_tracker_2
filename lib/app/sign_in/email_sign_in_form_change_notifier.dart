@@ -57,7 +57,7 @@ class _EmailSignInFormBlocBased extends State<EmailSignInFormChangeNotifier> {
       Navigator.of(context).pop();
     } on PlatformException catch (e) {
       if (Platform.isIOS) {
-        print('sow iOS dialog');
+        print('show iOS dialog');
       } else {
         PlatformExceptionAlertDialog(
           title: 'Sign in failed',
