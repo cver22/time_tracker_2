@@ -20,7 +20,7 @@ class JobEntriesPage extends StatelessWidget {
   final Job job;
 
   static Future<void> show(BuildContext context, Job job) async {
-    final Database database = Provider.of<Database>(context);
+    final Database database = Provider.of<Database>(context, listen: false);
     await Navigator.of(context).push(
       MaterialPageRoute(
         fullscreenDialog: false,
@@ -52,7 +52,7 @@ class JobEntriesPage extends StatelessWidget {
               'Edit',
               style: TextStyle(fontSize: 18.0, color: Colors.white),
             ),
-            onPressed: () => EditJobPage.show(context, job: job),
+            onPressed: () => EditJobPage.show(context, database: database, job: job),
           ),
         ],
       ),
