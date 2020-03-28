@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracker_2/app/home/job_entries/job_entries_page.dart';
 import 'package:time_tracker_2/app/home/jobs/edit_job_page.dart';
-import 'package:time_tracker_2/app/home/jobs/empty_content.dart';
 import 'package:time_tracker_2/app/home/jobs/job_list_tile.dart';
 import 'package:time_tracker_2/app/home/jobs/list_items_builder.dart';
 import 'package:time_tracker_2/app/home/models/job.dart';
